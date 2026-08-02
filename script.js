@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Настройка цветов оболочки Telegram Mini App
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        try {
+            tg.setBackgroundColor('#ffffff');
+            tg.setHeaderColor('#ffffff');
+            if (tg.setBottomBarColor) {
+                tg.setBottomBarColor('#ffffff');
+            }
+        } catch (e) {
+            console.error('Error setting Telegram colors:', e);
+        }
+    }
+
     const noteInput = document.getElementById('note-input');
     const notesListEl = document.getElementById('notes-list');
     const addNoteBtn = document.getElementById('add-note-btn');
