@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nofs Notepad</title>
+    <link rel="stylesheet" href="style.css?v=2">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div id="app-wrapper">
+        <div id="notes-list-view">
+            <h2>Мои заметки</h2>
+            <ul id="notes-list">
+                <li class="note-item active">Текущая заметка</li>
+            </ul>
+            <button id="add-note-btn">+ Новая заметка</button>
+        </div>
+        <div id="app">
+            <textarea id="note-input" placeholder="Начните писать..."></textarea>
+            <button id="back-button" aria-label="Назад">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path fill="currentColor" d="M9 15.714V8.287q0-.368.242-.588t.566-.22q.106 0 .214.028q.109.027.215.083l5.842 3.733q.186.13.28.298q.093.167.093.379t-.093.379t-.28.298l-5.843 3.733q-.105.055-.214.083q-.108.028-.214.028q-.323 0-.566-.22T9 15.714" />
+                </svg>
+            </button>
+        </div>
+        <div id="delete-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Удалить заметку?</h3>
+                <p>Вы действительно хотите удалить эту заметку? Это действие нельзя отменить.</p>
+                <div class="modal-actions">
+                    <button id="modal-cancel">Отмена</button>
+                    <button id="modal-delete">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js?v=2"></script>
+</body>
+</html>
