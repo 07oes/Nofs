@@ -1,21 +1,52 @@
+:root {
+    --bg-primary: hsl(0, 0%, 100%);
+    --bg-secondary: hsl(0, 0%, 95%);
+    --bg-canvas: hsl(0, 0%, 7%);
+    --text-primary: hsl(0, 0%, 25%);
+    --text-secondary: hsl(0, 0%, 70%);
+    --note-bg-base: 0, 0%, 100%;
+    --note-active-bg-base: 0, 0%, 92%;
+    --btn-bg: hsl(0, 0%, 100%);
+    --btn-text: hsl(0, 0%, 7%);
+    --btn-secondary-bg: hsl(0, 0%, 92%);
+    --accent-red: hsl(0, 80%, 55%);
+}
+
+body.theme-dark {
+    --bg-primary: hsl(0, 0%, 0%);
+    --bg-secondary: hsl(0, 0%, 5%);
+    --bg-canvas: hsl(0, 0%, 0%);
+    --text-primary: hsl(0, 0%, 85%);
+    --text-secondary: hsl(0, 0%, 60%);
+    --note-bg-base: 0, 0%, 8%;
+    --note-active-bg-base: 0, 0%, 12%;
+    --btn-bg: hsl(0, 0%, 20%);
+    --btn-text: hsl(0, 0%, 95%);
+    --btn-secondary-bg: hsl(0, 0%, 8%);
+    --accent-red: hsl(0, 80%, 55%);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation; /* Отключаем системную задержку в 300мс на двойной тап */
+    touch-action: manipulation;
 }
 
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Полностью блокируем прокрутку страницы */
+    overflow: hidden;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: hsl(0, 0%, 100%); /* Белый фон по бокам */
-    color: hsl(0, 0%, 20%);
+    /* Чтобы было красиво как у Apple, но без скачивания, мы явно просим систему 
+       использовать свой лучший современный шрифт (SF Pro на iOS/Mac, Helvetica Neue на остальных) */
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, "Segoe UI", sans-serif;
+    letter-spacing: 0.2px; 
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,8 +57,7 @@ body {
     width: 100%;
     max-width: 600px;
     height: 100dvh;
-    background-color: hsl(0, 0%, 7%);
-    /* overflow: hidden; убрано, чтобы выезжающая панель не обрезалась справа */
+    background-color: var(--bg-canvas);
 }
 
 #app {
@@ -36,24 +66,24 @@ body {
     height: 100%;
     padding: 20px;
     width: 100%;
-    background-color: hsl(0, 0%, 100%);
-    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.65s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: none; /* Тень скрыта, когда панель развернута на весь экран */
+    background-color: var(--bg-primary);
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.65s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.65s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+    box-shadow: -20px 0 30px -10px hsla(0, 0%, 0%, 0); /* Прозрачная тень вместо none для плавной анимации */
     position: absolute;
     top: 0;
     left: 0;
     z-index: 1;
     will-change: transform;
     backface-visibility: hidden;
-    transform: translateZ(0); /* Аппаратное ускорение */
+    transform: translateZ(0);
 }
 
 #app.slide-out {
     transform: translateX(85%);
     border-radius: 24px 0 0 0;
-    box-shadow: -20px 0 30px -10px hsla(0, 0%, 0%, 0.2); /* Строго направленная тень влево, справа ничего не торчит */
+    box-shadow: -20px 0 30px -10px hsla(0, 0%, 0%, 0.2);
     cursor: pointer;
-    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.5s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.5s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.5s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.3s;
 }
 
 #app.slide-out #note-input {
@@ -66,19 +96,48 @@ body {
     left: 0;
     width: 100%; 
     height: 100%;
-    padding: 50px 20px 20px 20px;
-    background-color: hsl(0, 0%, 95%);
-    color: hsl(0, 0%, 100%);
+    padding: 50px 20px 0 20px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
     z-index: 0;
     overflow-y: auto;
+    overflow-x: hidden;
+    transition: background-color 0.3s;
+}
+
+#notes-list-view::after {
+    content: '';
+    display: block;
+    position: sticky;
+    bottom: -1px; /* Защита от микрощелей */
+    width: calc(100% + 40px);
+    height: 71px;
+    background-color: var(--bg-secondary);
+    z-index: 5; /* Ниже кнопки (10), но выше заметок (auto) */
+    transform: translateX(-20px);
+    transition: background-color 0.3s;
+    pointer-events: none;
+}
+
+#notes-list-view::before {
+    content: '';
+    position: fixed;
+    bottom: 125px; /* 70px (bottom кнопки) + 56px (высота кнопки) - 1px нахлест */
+    left: 0;
+    width: 100%;
+    height: 16px; /* 15px визуальный зазор + 1px нахлест */
+    background-color: var(--bg-secondary);
+    z-index: 5;
+    pointer-events: none;
+    transition: background-color 0.3s;
 }
 
 #notes-list-view h2 {
-    font-family: sans-serif;
     font-size: 28px;
     margin-bottom: 20px;
     font-weight: 600;
-    color: hsl(0 0% 20% / 1);
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 #notes-list {
@@ -89,81 +148,90 @@ body {
 }
 
 .note-item {
+    width: 100%;
+    margin-bottom: 5px;
+    background: transparent;
+    border-radius: 999px 0 0 999px; /* Идеальное скругление в виде капсулы */
     position: relative;
-    border-radius: 12px 0 0 12px;
-    background-color: transparent;
-}
-
-.note-delete-action {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: calc(100% - 20px); /* Широкий фон, но не доходит до левого края (чтобы не просвечивал) */
-    padding-right: calc(28px + max(0px, 15vw - 20px));
-    height: 100%;
-    background-color: hsl(0, 80%, 55%);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end; /* Иконка всегда будет ровно в 80px зоне */
-    color: white;
-    z-index: 0;
     cursor: pointer;
-}
-
-.note-delete-action svg {
-    width: 22px;
-    height: 22px;
+    /* Убрали overflow: hidden, так как он вызывает графический баг (лесенку/полигоны) на границах в некоторых браузерах */
 }
 
 .note-content {
-    padding: 15px;
-    background-color: hsl(0, 0%, 100%);
-    color: hsl(0, 0%, 20%);
-    border-radius: 12px 0 0 12px;
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
-    border-left: 4px solid transparent;
-    position: relative;
-    z-index: 1;
+    background: linear-gradient(to right, hsla(var(--note-bg-base), 1) 85%, hsla(var(--note-bg-base), 0) 100%);
+    padding: 0 25px;
+    min-height: 56px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    box-shadow: 15px 0 20px -10px hsla(0, 0%, 0%, 0.15); /* Тень падает только на красный фон */
+    position: relative;
+    border-radius: 14px 0 0 14px; 
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, color 0.3s;
+    z-index: 1;
+    justify-content: space-between;
+    touch-action: pan-y;
 }
 
 .note-text {
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
     flex-grow: 1;
     padding-right: 10px;
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 
-.desktop-delete-btn {
+.delete-btn {
+    position: absolute;
+    right: -55px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background-color: var(--accent-red);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: hsl(0, 0%, 50%); /* Серый цвет по умолчанию (более темный) */
-    transition: color 0.2s;
-    flex-shrink: 0;
-    padding: 5px;
-    margin: -5px;
-    margin-right: calc(15% - 5px); /* Сдвигаем левее, чтобы не пряталось под белой панелью (15%) */
+    color: white;
+    box-shadow: 0 4px 10px hsla(0, 0%, 0%, 0.1);
+    transition: opacity 0.2s, background-color 0.3s;
 }
 
-.desktop-delete-btn:hover {
-    color: hsl(0, 80%, 55%); /* Красный при наведении */
+.delete-btn svg {
+    width: 24px;
+    height: 24px;
 }
 
-@media (hover: none), (pointer: coarse) {
-    .desktop-delete-btn {
-        display: none !important; /* На сенсорных экранах жестко скрываем иконку */
+@media (hover: hover) and (pointer: fine) {
+    .delete-btn {
+        position: static;
+        width: auto;
+        height: auto;
+        background-color: transparent;
+        color: var(--text-secondary);
+        box-shadow: none;
+        border-radius: 0;
+        margin-right: calc(15% - 5px);
+        transform: none;
+        padding: 5px;
+        margin-left: 0;
+    }
+    
+    .delete-btn svg {
+        width: 1.2em;
+        height: 1.2em;
+    }
+
+    .delete-btn:hover {
+        color: var(--accent-red);
     }
 }
 
 .note-item.active .note-content {
-    background-color: hsl(0, 0%, 90%);
-    color: hsl(0 0% 20% / 1);
+    background: linear-gradient(to right, hsla(var(--note-active-bg-base), 1) 85%, hsla(var(--note-active-bg-base), 0) 100%);
+    color: var(--text-primary);
 }
 
 @keyframes slideDownIn {
@@ -182,16 +250,34 @@ body {
 }
 
 #add-note-btn {
-    margin-top: 20px;
+    margin-top: 15px; 
+    margin-left: 0;
     width: 100%;
-    padding: 15px;
-    background-color: hsl(0, 0%, 100%);
-    color: hsl(0, 0%, 7%);
+    padding: 0 calc(25px + 15%) 0 25px; /* Учитываем, что правые 15% прозрачные, поэтому сдвигаем контент левее для идеального визуального центра */
+    min-height: 56px;
+    background: linear-gradient(to right, hsla(var(--note-bg-base), 1) 85%, hsla(var(--note-bg-base), 0) 100%);
+    color: var(--text-primary);
     border: none;
-    border-radius: 12px;
+    border-radius: 14px 0 0 14px; /* В точности как у заметки */
     font-size: 16px;
-    font-weight: 600;
+    font-family: inherit;
+    font-weight: 400;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Текст по центру */
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, color 0.3s, filter 0.3s;
+    
+    /* Делаем кнопку плавающей */
+    position: sticky;
+    bottom: 70px; /* Задерживается выше шестеренки */
+    z-index: 10;
+    box-shadow: none;
+    filter: none;
+}
+
+body.theme-dark #add-note-btn {
+    filter: none;
 }
 
 #note-input {
@@ -213,20 +299,19 @@ body {
     left: 0px;
     background: none;
     border: none;
-    font-size: 32px;
-    color: hsl(0 0% 20%);
+    font-size: 24px;
+    color: var(--text-primary);
     cursor: pointer;
     padding: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s, color 0.3s;
     opacity: 0.8;
     z-index: 100;
 }
 
 #back-button:active {
-    transform: scale(1.25);
     opacity: 1;
 }
 
@@ -234,10 +319,36 @@ body {
     transform: rotate(180deg);
 }
 
+#settings-btn {
+    position: absolute;
+    bottom: 15px; /* Возвращаем на место */
+    left: 10px;
+    width: 44px; /* Делаем область 44x44px для удобного нажатия пальцем */
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    z-index: 0;
+}
 
+#settings-btn:hover {
+    color: var(--text-primary);
+}
+
+#settings-btn:active {
+    transform: scale(0.9);
+}
+
+#settings-btn svg {
+    width: 26px;
+    height: 26px;
+}
 
 #app.slide-out #back-button svg {
-    transform: rotate(0deg); /* Стрелочка смотрит вправо */
+    transform: rotate(0deg);
 }
 
 .modal-overlay {
@@ -262,14 +373,14 @@ body {
 }
 
 .modal-content {
-    background-color: hsl(0, 0%, 100%);
-    padding: 20px;
+    background-color: var(--bg-primary);
+    padding: 24px;
     border-radius: 16px;
     width: 90%;
     max-width: 320px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     transform: scale(0.9);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
 }
 
 .modal-overlay.show .modal-content {
@@ -277,16 +388,18 @@ body {
 }
 
 .modal-content h3 {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-size: 20px;
-    color: hsl(0, 0%, 10%);
+    color: var(--text-primary);
+    transition: color 0.3s;
 }
 
 .modal-content p {
-    color: hsl(0, 0%, 40%);
+    color: var(--text-secondary);
     margin-bottom: 24px;
     line-height: 1.4;
     font-size: 15px;
+    transition: color 0.3s;
 }
 
 .modal-actions {
@@ -303,19 +416,86 @@ body {
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, background-color 0.3s, color 0.3s;
 }
 
 .modal-actions button:active {
     opacity: 0.7;
 }
 
-#modal-cancel {
-    background-color: hsl(0, 0%, 90%);
-    color: hsl(0, 0%, 20%);
+#modal-cancel, #settings-close {
+    background-color: var(--btn-secondary-bg);
+    color: var(--text-primary);
 }
 
 #modal-delete {
-    background-color: hsl(0, 80%, 55%);
+    background-color: var(--accent-red);
     color: white;
 }
+
+/* Стили для настроек */
+.settings-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Выравниваем по верхнему краю */
+    margin-bottom: 20px;
+}
+
+.settings-group label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-top: 13px; /* Выравнивание под новую высоту (36px) */
+}
+
+/* Стили для вертикальных тумблеров настроек */
+.tumbler-container {
+    position: relative;
+    width: 100px;
+    background-color: var(--btn-secondary-bg);
+    border-radius: 12px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tumbler-bg {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: calc(100% - 10px);
+    height: 34px;
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.3s, box-shadow 0.3s;
+    z-index: 1;
+}
+
+body.theme-dark .tumbler-bg {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.tumbler-container[data-active-index="0"] .tumbler-bg { transform: translateY(0); }
+.tumbler-container[data-active-index="1"] .tumbler-bg { transform: translateY(34px); }
+.tumbler-container[data-active-index="2"] .tumbler-bg { transform: translateY(68px); }
+.tumbler-container[data-active-index="3"] .tumbler-bg { transform: translateY(102px); }
+
+.tumbler-option {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.tumbler-container[data-active-index="0"] .tumbler-option:nth-child(2) { color: var(--text-primary); }
+.tumbler-container[data-active-index="1"] .tumbler-option:nth-child(3) { color: var(--text-primary); }
+.tumbler-container[data-active-index="2"] .tumbler-option:nth-child(4) { color: var(--text-primary); }
+.tumbler-container[data-active-index="3"] .tumbler-option:nth-child(5) { color: var(--text-primary); }

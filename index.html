@@ -10,14 +10,20 @@
 <body>
     <div id="app-wrapper">
         <div id="notes-list-view">
-            <h2>Мои заметки</h2>
+            <h2 data-i18n="myNotes">Мои заметки</h2>
             <ul id="notes-list">
-                <li class="note-item active">Текущая заметка</li>
+                <!-- Заметки будут добавляться сюда -->
             </ul>
-            <button id="add-note-btn">+ Новая заметка</button>
+            <button id="add-note-btn" data-i18n="newNote">+ Новая заметка</button>
+        </div>
+        <div id="settings-btn" aria-label="Настройки">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path fill="currentColor" d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49-.12.64L4.57 11c-.04.34-.07.67-.07 1s.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64z" />
+            </svg>
         </div>
         <div id="app">
-            <textarea id="note-input" placeholder="Начните писать..."></textarea>
+            <textarea id="note-input" data-i18n-placeholder="startTyping" placeholder="Начните писать..."></textarea>
             <button id="back-button" aria-label="Назад">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
                     <path d="M0 0h24v24H0z" fill="none" />
@@ -27,11 +33,38 @@
         </div>
         <div id="delete-modal" class="modal-overlay">
             <div class="modal-content">
-                <h3>Удалить заметку?</h3>
-                <p>Вы действительно хотите удалить эту заметку? Это действие нельзя отменить.</p>
+                <h3 data-i18n="deleteTitle">Удалить заметку?</h3>
+                <p data-i18n="deleteDesc">Вы действительно хотите удалить эту заметку? Это действие нельзя отменить.</p>
                 <div class="modal-actions">
-                    <button id="modal-cancel">Отмена</button>
-                    <button id="modal-delete">Удалить</button>
+                    <button id="modal-cancel" data-i18n="cancel">Отмена</button>
+                    <button id="modal-delete" data-i18n="delete">Удалить</button>
+                </div>
+            </div>
+        </div>
+        <div id="settings-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3 data-i18n="settingsTitle" style="text-align: center; margin-bottom: 20px;">Настройки</h3>
+                <div class="settings-group">
+                    <label data-i18n="themeLabel">Тема</label>
+                    <div class="tumbler-container" id="theme-tumbler" data-active-index="0">
+                        <div class="tumbler-bg"></div>
+                        <div class="tumbler-option" data-value="light" data-i18n="themeLight">Светлая</div>
+                        <div class="tumbler-option" data-value="dark" data-i18n="themeDark">Темная</div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <label data-i18n="langLabel">Язык</label>
+                    <div class="tumbler-container" id="lang-tumbler" data-active-index="0">
+                        <div class="tumbler-bg"></div>
+                        <div class="tumbler-option" data-value="en">English</div>
+                        <div class="tumbler-option" data-value="de">Deutsch</div>
+                        <div class="tumbler-option" data-value="ru">Русский</div>
+                        <div class="tumbler-option" data-value="uk">Українська</div>
+                    </div>
+                </div>
+                <div class="modal-actions" style="margin-top: 24px;">
+                    <button id="settings-close" data-i18n="close">Закрыть</button>
                 </div>
             </div>
         </div>
