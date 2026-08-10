@@ -440,14 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateDeleteBtnUI() {
-        const activeNotes = notes.filter(n => !n.isDeleted);
-        if (selectedNotes.size === activeNotes.length && activeNotes.length > 0) {
-            batchDeleteBtn.style.opacity = '0.5';
-            batchDeleteBtn.style.pointerEvents = 'none';
-        } else {
-            batchDeleteBtn.style.opacity = '1';
-            batchDeleteBtn.style.pointerEvents = 'auto';
-        }
+        batchDeleteBtn.style.opacity = '1';
+        batchDeleteBtn.style.pointerEvents = 'auto';
     }
 
     loadFolders();
@@ -502,12 +496,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 n.deletedAt = new Date().toISOString();
                             }
                         });
+                        const activeNotes = notes.filter(n => !n.isDeleted);
+                        if (activeNotes.length === 0) {
+                            let target = folders.length > 0 ? folders[0].id : 'main';
+                            notes.unshift({ id: Date.now().toString(), content: '', folderId: target });
+                        }
                         saveNotes();
              // Иконки
                         currentFolderId = 'all';
                         renderSidebar();
-                        if (notes.length > 0) {
-                            selectNote(notes[0].id);
+                        const updatedNotes = notes.filter(n => !n.isDeleted);
+                        if (updatedNotes.length > 0) {
+                            selectNote(updatedNotes[0].id);
                         } else {
                             noteInput.value = '';
                             currentNoteId = null;
@@ -702,11 +702,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     n.deletedAt = new Date().toISOString();
                 }
             });
+            const activeNotes = notes.filter(n => !n.isDeleted);
+            if (activeNotes.length === 0) {
+                let target = folders.length > 0 ? folders[0].id : 'main';
+                notes.unshift({ id: Date.now().toString(), content: '', folderId: target });
+            }
             saveNotes();
             
             if (selectedNotes.has(currentNoteId)) {
-                if (notes.length > 0) {
-                    selectNote(notes[0].id);
+                const nextNote = notes.find(n => !n.isDeleted);
+                if (nextNote) {
+                    selectNote(nextNote.id);
                 } else {
                     noteInput.value = '';
                     currentNoteId = null;
