@@ -1,29 +1,38 @@
 :root {
     --bg-primary: hsl(0, 0%, 100%);
-    --bg-secondary: hsl(0, 0%, 95%);
-    --bg-canvas: hsl(0, 0%, 7%);
-    --text-primary: hsl(0, 0%, 25%);
-    --text-secondary: hsl(0, 0%, 70%);
+    --bg-secondary: hsl(0, 0%, 97%);
+    --bg-canvas: hsl(0, 0%, 100%);
+    --sidebar-width: 54px;
+    --text-primary: hsl(0, 0%, 10%);
+    --text-secondary: hsl(0, 0%, 60%);
     --note-bg-base: 0, 0%, 100%;
-    --note-active-bg-base: 0, 0%, 92%;
+    --note-active-bg-base: 0, 0%, 93%;
     --btn-bg: hsl(0, 0%, 100%);
     --btn-text: hsl(0, 0%, 7%);
-    --btn-secondary-bg: hsl(0, 0%, 92%);
+    --btn-secondary-bg: hsl(0, 0%, 93%);
     --accent-red: hsl(0, 80%, 55%);
 }
 
 body.theme-dark {
-    --bg-primary: hsl(0, 0%, 0%);
+    /* Pure neutral dark — no blue, no tint */
+    --bg-primary: hsl(0, 0%, 8%);
     --bg-secondary: hsl(0, 0%, 5%);
-    --bg-canvas: hsl(0, 0%, 0%);
-    --text-primary: hsl(0, 0%, 85%);
-    --text-secondary: hsl(0, 0%, 60%);
-    --note-bg-base: 0, 0%, 8%;
-    --note-active-bg-base: 0, 0%, 12%;
-    --btn-bg: hsl(0, 0%, 20%);
-    --btn-text: hsl(0, 0%, 95%);
-    --btn-secondary-bg: hsl(0, 0%, 8%);
-    --accent-red: hsl(0, 80%, 55%);
+    --bg-canvas: hsl(0, 0%, 4%);
+    /* Typography */
+    --text-primary: hsl(0, 0%, 90%);
+    --text-secondary: hsl(0, 0%, 48%);
+    /* Note items */
+    --note-bg-base: 0, 0%, 10%;
+    --note-active-bg-base: 0, 0%, 16%;
+    /* Buttons */
+    --btn-bg: hsl(0, 0%, 14%);
+    --btn-text: hsl(0, 0%, 90%);
+    --btn-secondary-bg: hsl(0, 0%, 12%);
+    /* Accent */
+    --accent-red: hsl(3, 86%, 62%);
+    /* Extras */
+    --border-subtle: rgba(255, 255, 255, 0.07);
+    --shadow-color: rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -38,6 +47,14 @@ html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+input, textarea {
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
 body {
@@ -50,6 +67,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #app-wrapper {
@@ -79,7 +97,7 @@ body {
 }
 
 #app.slide-out {
-    transform: translateX(85%);
+    transform: translateX(calc(100% - var(--sidebar-width)));
     border-radius: 24px 0 0 0;
     box-shadow: -20px 0 30px -10px hsla(0, 0%, 0%, 0.2);
     cursor: pointer;
@@ -93,48 +111,157 @@ body {
 #notes-list-view {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%; 
+    left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width)); 
     height: 100%;
-    padding: 50px 20px 0 20px;
+    padding: 50px 0 0 0;
     background-color: var(--bg-secondary);
     color: var(--text-primary);
     z-index: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    transition: background-color 0.3s;
+    scroll-behavior: smooth;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-#notes-list-view::after {
-    content: '';
-    display: block;
-    position: sticky;
-    bottom: -1px; /* Защита от микрощелей */
-    width: calc(100% + 40px);
-    height: 71px;
-    background-color: var(--bg-secondary);
-    z-index: 5; /* Ниже кнопки (10), но выше заметок (auto) */
-    transform: translateX(-20px);
-    transition: background-color 0.3s;
-    pointer-events: none;
-}
-
-#notes-list-view::before {
-    content: '';
-    position: fixed;
-    bottom: 125px; /* 70px (bottom кнопки) + 56px (высота кнопки) - 1px нахлест */
+#sidebar {
+    position: absolute;
+    top: 0;
     left: 0;
+    width: var(--sidebar-width);
+    height: 100%;
+    background-color: var(--bg-canvas);
+    border-right: 1px solid rgba(128, 128, 128, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+    padding-bottom: 20px;
+    z-index: 0;
+    transition: background-color 0.3s, border-right-color 0.3s;
+}
+
+#folders-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
-    height: 16px; /* 15px визуальный зазор + 1px нахлест */
-    background-color: var(--bg-secondary);
-    z-index: 5;
-    pointer-events: none;
-    transition: background-color 0.3s;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+#folders-list::-webkit-scrollbar {
+    display: none;
+}
+
+.folder-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 24px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    flex-shrink: 0;
+}
+
+.folder-icon:hover {
+    background-color: rgba(128, 128, 128, 0.1);
+}
+
+.folder-icon:active {
+    transform: scale(0.9);
+}
+
+.folder-icon.pressing {
+    animation: folder-pulse 0.8s ease-out infinite;
+}
+
+.folder-icon.pressing img.apple-emoji {
+    transform: scale(1.35);
+    transition: transform 0.8s ease-in-out;
+}
+
+@keyframes folder-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(128, 128, 128, 0.3), 
+                    0 0 0 0 rgba(128, 128, 128, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 0 12px rgba(128, 128, 128, 0), 
+                    0 0 0 24px rgba(128, 128, 128, 0);
+    }
+}
+
+.folder-icon.active {
+    background-color: rgba(128, 128, 128, 0.15);
+}
+
+#add-folder-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px dashed rgba(128, 128, 128, 0.4);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.2s;
+}
+
+#add-folder-btn:active {
+    background-color: rgba(128, 128, 128, 0.1);
+}
+
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 10px;
+    max-height: 240px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
+}
+
+.icon-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.icon-grid::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.3);
+    border-radius: 10px;
+}
+
+.icon-option {
+    font-size: 32px;
+    text-align: center;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.icon-option:active {
+    background-color: rgba(128, 128, 128, 0.2);
 }
 
 #notes-list-view h2 {
     font-size: 28px;
     margin-bottom: 20px;
+    padding-left: 20px;
     font-weight: 600;
     color: var(--text-primary);
     transition: color 0.3s;
@@ -148,90 +275,58 @@ body {
 }
 
 .note-item {
-    width: 100%;
+    width: calc(100% - var(--sidebar-width));
     margin-bottom: 5px;
     background: transparent;
-    border-radius: 999px 0 0 999px; /* Идеальное скругление в виде капсулы */
+    border-radius: 0;
     position: relative;
     cursor: pointer;
-    /* Убрали overflow: hidden, так как он вызывает графический баг (лесенку/полигоны) на границах в некоторых браузерах */
 }
 
 .note-content {
-    background: linear-gradient(to right, hsla(var(--note-bg-base), 1) 85%, hsla(var(--note-bg-base), 0) 100%);
-    padding: 0 25px;
+    background: hsla(var(--note-bg-base), 1);
+    margin: 0 -15px;
+    padding: 0 40px;
     min-height: 56px;
     display: flex;
     align-items: center;
     position: relative;
-    border-radius: 14px 0 0 14px; 
+    border-radius: 0;
     color: var(--text-primary);
     font-size: 16px;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, color 0.3s;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s, color 0.3s;
     z-index: 1;
-    justify-content: space-between;
+    justify-content: flex-start;
     touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .note-text {
     white-space: nowrap;
     overflow: hidden;
     flex-grow: 1;
-    padding-right: 10px;
-    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    text-overflow: ellipsis;
 }
 
-.delete-btn {
-    position: absolute;
-    right: -55px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
-    background-color: var(--accent-red);
-    border-radius: 50%;
+.note-star {
+    margin-left: 10px;
+    flex-shrink: 0;
+    color: #FFD700;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    box-shadow: 0 4px 10px hsla(0, 0%, 0%, 0.1);
-    transition: opacity 0.2s, background-color 0.3s;
-}
-
-.delete-btn svg {
-    width: 24px;
-    height: 24px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .delete-btn {
-        position: static;
-        width: auto;
-        height: auto;
-        background-color: transparent;
-        color: var(--text-secondary);
-        box-shadow: none;
-        border-radius: 0;
-        margin-right: calc(15% - 5px);
-        transform: none;
-        padding: 5px;
-        margin-left: 0;
-    }
-    
-    .delete-btn svg {
-        width: 1.2em;
-        height: 1.2em;
-    }
-
-    .delete-btn:hover {
-        color: var(--accent-red);
-    }
 }
 
 .note-item.active .note-content {
-    background: linear-gradient(to right, hsla(var(--note-active-bg-base), 1) 85%, hsla(var(--note-active-bg-base), 0) 100%);
+    background: hsla(var(--note-active-bg-base), 1);
     color: var(--text-primary);
+    border-radius: 0;
+}
+
+.note-content.pressing {
+    transform: scale(0.96);
+    opacity: 0.8;
 }
 
 @keyframes slideDownIn {
@@ -249,35 +344,35 @@ body {
     animation: slideDownIn 0.6s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
-#add-note-btn {
-    margin-top: 15px; 
-    margin-left: 0;
-    width: 100%;
-    padding: 0 calc(25px + 15%) 0 25px; /* Учитываем, что правые 15% прозрачные, поэтому сдвигаем контент левее для идеального визуального центра */
-    min-height: 56px;
-    background: linear-gradient(to right, hsla(var(--note-bg-base), 1) 85%, hsla(var(--note-bg-base), 0) 100%);
-    color: var(--text-primary);
-    border: none;
-    border-radius: 14px 0 0 14px; /* В точности как у заметки */
-    font-size: 16px;
-    font-family: inherit;
-    font-weight: 400;
-    cursor: pointer;
+.sidebar-bottom {
+    margin-top: auto;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center; /* Текст по центру */
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, color 0.3s, filter 0.3s;
-    
-    /* Делаем кнопку плавающей */
-    position: sticky;
-    bottom: 70px; /* Задерживается выше шестеренки */
-    z-index: 10;
-    box-shadow: none;
-    filter: none;
+    gap: 15px;
+    width: 100%;
 }
 
-body.theme-dark #add-note-btn {
-    filter: none;
+#add-note-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#add-note-btn:active {
+    transform: scale(0.9);
+}
+
+#add-note-btn svg {
+    width: 28px;
+    height: 28px;
 }
 
 #note-input {
@@ -297,12 +392,13 @@ body.theme-dark #add-note-btn {
     position: fixed;
     bottom: 60px;
     left: 0px;
+    width: var(--sidebar-width);
     background: none;
     border: none;
     font-size: 24px;
     color: var(--text-primary);
     cursor: pointer;
-    padding: 5px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -320,18 +416,14 @@ body.theme-dark #add-note-btn {
 }
 
 #settings-btn {
-    position: absolute;
-    bottom: 15px; /* Возвращаем на место */
-    left: 10px;
-    width: 44px; /* Делаем область 44x44px для удобного нажатия пальцем */
+    width: 44px; 
     height: 44px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     cursor: pointer;
     transition: color 0.2s, transform 0.2s;
-    z-index: 0;
 }
 
 #settings-btn:hover {
@@ -437,7 +529,7 @@ body.theme-dark #add-note-btn {
 .settings-group {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Выравниваем по верхнему краю */
+    align-items: center;
     margin-bottom: 20px;
 }
 
@@ -445,57 +537,553 @@ body.theme-dark #add-note-btn {
     font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
-    margin-top: 13px; /* Выравнивание под новую высоту (36px) */
 }
 
 /* Стили для вертикальных тумблеров настроек */
-.tumbler-container {
+.custom-dropdown {
     position: relative;
-    width: 100px;
+    width: auto;
+    min-width: 100px;
+}
+
+.dropdown-header {
     background-color: var(--btn-secondary-bg);
-    border-radius: 12px;
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-}
-
-.tumbler-bg {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    width: calc(100% - 10px);
-    height: 34px;
-    background-color: var(--bg-primary);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.3s, box-shadow 0.3s;
-    z-index: 1;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: background-color 0.3s;
+    gap: 8px;
 }
 
-body.theme-dark .tumbler-bg {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+.dropdown-header:hover {
+    background-color: rgba(128, 128, 128, 0.15);
 }
 
-.tumbler-container[data-active-index="0"] .tumbler-bg { transform: translateY(0); }
-.tumbler-container[data-active-index="1"] .tumbler-bg { transform: translateY(34px); }
-.tumbler-container[data-active-index="2"] .tumbler-bg { transform: translateY(68px); }
-.tumbler-container[data-active-index="3"] .tumbler-bg { transform: translateY(102px); }
+.dropdown-arrow {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-.tumbler-option {
-    height: 34px;
+.custom-dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-list {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 160px;
+    background-color: var(--bg-primary);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    overflow-y: auto;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+    z-index: 100;
+}
+
+body.theme-dark .dropdown-list {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-dropdown.open .dropdown-list {
+    max-height: 160px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dropdown-option {
+    padding: 10px 16px;
+    font-size: 15px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown-option:hover {
+    background-color: var(--btn-secondary-bg);
+    color: var(--text-primary);
+}
+
+.dropdown-option.selected {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Кнопка Корзина в настройках */
+.settings-trash-btn {
+    width: calc(100% + 48px);
+    margin: 4px -24px 20px -24px; /* 20px bottom margin for spacing before storage */
+    padding: 16px;
+    background-color: var(--btn-secondary-bg);
+    border: none;
+    color: var(--text-secondary); /* Серый цвет по просьбе пользователя */
+    font-size: 16px;
+    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    z-index: 2;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text-secondary);
+    gap: 8px;
     cursor: pointer;
-    transition: color 0.3s;
+    transition: background-color 0.2s;
 }
 
-.tumbler-container[data-active-index="0"] .tumbler-option:nth-child(2) { color: var(--text-primary); }
-.tumbler-container[data-active-index="1"] .tumbler-option:nth-child(3) { color: var(--text-primary); }
-.tumbler-container[data-active-index="2"] .tumbler-option:nth-child(4) { color: var(--text-primary); }
-.tumbler-container[data-active-index="3"] .tumbler-option:nth-child(5) { color: var(--text-primary); }
+.settings-trash-btn:hover {
+    background-color: rgba(128, 128, 128, 0.1);
+}
+
+.settings-trash-btn svg {
+    fill: currentColor;
+}
+
+/* Лимит хранилища Telegram */
+.storage-limit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: -4px; /* Чтобы компенсировать нижний паддинг модалки */
+}
+
+.storage-limit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.storage-limit-header span:last-child {
+    font-weight: 500;
+}
+
+.storage-progress-bg {
+    width: 100%;
+    height: 6px;
+    background-color: var(--btn-secondary-bg);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.storage-progress-fill {
+    height: 100%;
+    background-color: #2481cc; /* Цвет Telegram */
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Стили для переключателей (свитчей) в настройках */
+.setting-toggle {
+    width: 44px;
+    height: 24px;
+    background-color: var(--btn-secondary-bg);
+    border-radius: 12px;
+    position: relative;
+    transition: background-color 0.3s;
+    box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.2);
+    flex-shrink: 0; /* Предотвращает сжатие из-за длинного текста */
+}
+
+.setting-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.settings-group.active .setting-toggle {
+    background-color: #34c759; /* iOS Green */
+    box-shadow: none;
+}
+
+.settings-group.active .setting-toggle::after {
+    transform: translateX(20px);
+}
+/* Selection Mode Styles */
+.note-checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(128, 128, 128, 0.4);
+    margin-left: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
+    transform: scale(0);
+}
+
+.selection-mode .note-checkbox {
+    opacity: 1;
+    width: 22px;
+    margin-left: 12px;
+    transform: scale(1);
+}
+
+body.selection-mode .note-content {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s, color 0.3s;
+}
+
+.note-checkbox.checked {
+    background-color: var(--text-primary);
+    border-color: var(--text-primary);
+}
+
+.note-checkbox.checked::after {
+    content: '';
+    width: 5px;
+    height: 10px;
+    border: solid var(--bg-primary);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.selection-action-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--bg-secondary);
+    border-radius: 30px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    visibility: hidden;
+}
+
+.selection-action-bar.show {
+    transform: translateX(-50%) translateY(0);
+    visibility: visible;
+}
+
+.batch-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.batch-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(128, 128, 128, 0.1);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.batch-btn:active {
+    transform: scale(0.9);
+    background: rgba(128, 128, 128, 0.2);
+}
+
+.batch-btn.active-red {
+    color: var(--accent-red);
+}
+
+img.apple-emoji {
+    height: 1em;
+    width: 1em;
+    vertical-align: -0.1em;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ����� ��� ���������� ���� ������� */
+.trash-item {
+    background-color: hsl(0 0% 92% / 1);
+    padding: 6px 12px;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(128,128,128,0.15);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+    border-radius: 0;
+    max-height: 100px;
+    flex-shrink: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease, border-width 0.3s ease;
+    overflow: hidden;
+}
+
+.trash-item.fade-out {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+}
+
+.trash-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.trash-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.trash-item-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.trash-item-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trash-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.trash-item-date {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.trash-item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.trash-action-btn {
+    background: var(--btn-secondary-bg);
+    border: none;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.trash-action-btn.restore { color: #34c759; }
+.trash-action-btn.delete { color: #ff3b30; }
+.trash-action-btn:hover { background-color: rgba(128,128,128,0.2); }
+
+#delete-modal {
+    z-index: 1001;
+}
+
+/* ============================================
+   PREMIUM DARK THEME OVERRIDES — pure neutral black
+   ============================================ */
+
+/* Sidebar */
+body.theme-dark #sidebar {
+    background-color: hsl(0, 0%, 5%);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Notes list panel */
+body.theme-dark #notes-list-view {
+    background-color: hsl(0, 0%, 6%);
+}
+
+body.theme-dark #notes-list-view h2 {
+    color: hsl(0, 0%, 90%);
+}
+
+/* Note editor area */
+body.theme-dark #app {
+    background-color: hsl(0, 0%, 8%);
+}
+
+body.theme-dark #note-input {
+    color: hsl(0, 0%, 88%);
+    caret-color: hsl(0, 0%, 70%);
+}
+
+body.theme-dark #note-input::placeholder {
+    color: hsl(0, 0%, 32%);
+}
+
+/* Active note in list */
+body.theme-dark .note-item.active .note-content {
+    background: hsl(0, 0%, 17%);
+}
+
+/* Note content hover */
+body.theme-dark .note-content:hover {
+    background: hsl(0, 0%, 13%) !important;
+}
+
+/* Slide-out shadow */
+body.theme-dark #app.slide-out {
+    box-shadow: -20px 0 40px -10px rgba(0, 0, 0, 0.8);
+}
+
+/* Modal backdrop */
+body.theme-dark .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Modal card */
+body.theme-dark .modal-content {
+    background-color: hsl(0, 0%, 11%);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255,255,255,0.07);
+}
+
+/* Delete confirmation (iOS-style sheet) */
+body.theme-dark #delete-modal .modal-content > div {
+    background: hsl(0, 0%, 8%) !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9) !important;
+}
+
+body.theme-dark #modal-delete-title {
+    background: hsl(0, 0%, 8%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.theme-dark #modal-change-icon,
+body.theme-dark #modal-delete {
+    background: hsl(0, 0%, 8%) !important;
+}
+
+body.theme-dark #modal-change-icon:active,
+body.theme-dark #modal-delete:active {
+    background: hsl(0, 0%, 22%) !important;
+}
+
+/* Dropdown */
+body.theme-dark .dropdown-header {
+    background-color: hsl(0, 0%, 15%);
+}
+
+body.theme-dark .dropdown-header:hover {
+    background-color: hsl(0, 0%, 19%);
+}
+
+body.theme-dark .dropdown-list {
+    background-color: hsl(0, 0%, 12%);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+body.theme-dark .dropdown-option:hover {
+    background-color: hsl(0, 0%, 17%);
+}
+
+/* Settings trash button */
+body.theme-dark .settings-trash-btn {
+    background-color: hsl(0, 0%, 10%);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.theme-dark .settings-trash-btn:hover {
+    background-color: hsl(0, 0%, 15%);
+}
+
+/* Toggle switch track in dark mode */
+body.theme-dark .setting-toggle {
+    background-color: hsl(0, 0%, 20%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Storage progress bar bg */
+body.theme-dark .storage-progress-bg {
+    background-color: hsl(0, 0%, 17%);
+}
+
+/* Selection action bar */
+body.theme-dark .selection-action-bar {
+    background: hsl(0, 0%, 12%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+body.theme-dark .batch-btn {
+    background: hsl(0, 0%, 18%);
+}
+
+body.theme-dark .batch-btn:active {
+    background: hsl(0, 0%, 25%);
+}
+
+/* Trash modal items */
+body.theme-dark .trash-item {
+    background-color: hsl(0, 0%, 9%);
+    border-top-color: rgba(255, 255, 255, 0.06);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+body.theme-dark .trash-action-btn {
+    background: hsl(0, 0%, 18%);
+}
+
+body.theme-dark .trash-action-btn:hover {
+    background: hsl(0, 0%, 24%);
+}
+
+/* Folder add button border */
+body.theme-dark #add-folder-btn {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Checkbox circle */
+body.theme-dark .note-checkbox {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Folder active bg */
+body.theme-dark .folder-icon.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.theme-dark .folder-icon:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Separator in settings */
+body.theme-dark .modal-content hr {
+    border-top-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Action sheet (create/delete modal) — dark mode: no white corners */
+body.theme-dark .action-sheet-inner {
+    background: hsl(0, 0%, 18%) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+}

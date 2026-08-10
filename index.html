@@ -9,18 +9,29 @@
 </head>
 <body>
     <div id="app-wrapper">
+        <div id="sidebar">
+            <div id="folders-list">
+                <!-- Папки будут здесь -->
+            </div>
+            <div class="sidebar-bottom">
+                <button id="add-note-btn" title="Новая заметка">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/>
+                    </svg>
+                </button>
+                <div id="settings-btn" aria-label="Настройки">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path fill="currentColor" d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49-.12.64L4.57 11c-.04.34-.07.67-.07 1s.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
         <div id="notes-list-view">
             <h2 data-i18n="myNotes">Мои заметки</h2>
             <ul id="notes-list">
                 <!-- Заметки будут добавляться сюда -->
             </ul>
-            <button id="add-note-btn" data-i18n="newNote">+ Новая заметка</button>
-        </div>
-        <div id="settings-btn" aria-label="Настройки">
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                <path d="M0 0h24v24H0z" fill="none" />
-                <path fill="currentColor" d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49-.12.64L4.57 11c-.04.34-.07.67-.07 1s.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64z" />
-            </svg>
         </div>
         <div id="app">
             <textarea id="note-input" data-i18n-placeholder="startTyping" placeholder="Начните писать..."></textarea>
@@ -32,44 +43,142 @@
             </button>
         </div>
         <div id="delete-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3 data-i18n="deleteTitle">Удалить заметку?</h3>
-                <p data-i18n="deleteDesc">Вы действительно хотите удалить эту заметку? Это действие нельзя отменить.</p>
-                <div class="modal-actions">
-                    <button id="modal-cancel" data-i18n="cancel">Отмена</button>
-                    <button id="modal-delete" data-i18n="delete">Удалить</button>
+            <div class="modal-content" style="max-width: 260px; padding: 0; background: transparent; box-shadow: none;">
+                <div class="action-sheet-inner" style="display: flex; flex-direction: column; gap: 1px; background: hsl(0deg 0% 100% / 70%); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <div id="modal-delete-title" data-i18n="deleteTitle" style="width: 100%; padding: 18px; background: var(--bg-primary); color: var(--text-secondary); font-size: 14px; font-weight: 400; text-align: center;">Вы уверены, что хотите удалить выделенные заметки?</div>
+                    <button id="modal-change-icon" style="display: none; width: 100%; padding: 18px; border-radius: 0; border: none; background: var(--bg-primary); color: var(--text-primary); font-size: 16px; font-weight: 500; cursor: pointer;">Редактировать</button>
+                    <button id="modal-delete" data-i18n="delete" style="width: 100%; padding: 18px; border-radius: 0; border: none; background: var(--bg-primary); color: #ff3b30; font-size: 16px; font-weight: 600; cursor: pointer;">Удалить</button>
                 </div>
             </div>
         </div>
         <div id="settings-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3 data-i18n="settingsTitle" style="text-align: center; margin-bottom: 20px;">Настройки</h3>
+            <div class="modal-content" style="height: 450px; max-height: 80vh; overflow-y: auto; padding: 24px; border-radius: 16px; width: 90%; max-width: 340px; display: flex; flex-direction: column;">
+                <h3 data-i18n="settingsTitle" style="text-align: center; margin-bottom: 16px;">Настройки</h3>
+                
+                <!-- Разделитель -->
+                <hr style="border: none; border-top: 1px solid rgba(128, 128, 128, 0.2); margin: 0 -24px 20px -24px;">
+
+                <!-- Тема -->
                 <div class="settings-group">
                     <label data-i18n="themeLabel">Тема</label>
-                    <div class="tumbler-container" id="theme-tumbler" data-active-index="0">
-                        <div class="tumbler-bg"></div>
-                        <div class="tumbler-option" data-value="light" data-i18n="themeLight">Светлая</div>
-                        <div class="tumbler-option" data-value="dark" data-i18n="themeDark">Темная</div>
+                    <div class="custom-dropdown" id="theme-dropdown">
+                        <div class="dropdown-header">
+                            <span class="dropdown-selected" data-i18n="themeLight">Светлая</span>
+                            <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                        </div>
+                        <div class="dropdown-list">
+                            <div class="dropdown-option" data-value="light" data-i18n="themeLight">Светлая</div>
+                            <div class="dropdown-option" data-value="dark" data-i18n="themeDark">Темная</div>
+                        </div>
                     </div>
                 </div>
                 
+                <!-- Язык -->
                 <div class="settings-group">
                     <label data-i18n="langLabel">Язык</label>
-                    <div class="tumbler-container" id="lang-tumbler" data-active-index="0">
-                        <div class="tumbler-bg"></div>
-                        <div class="tumbler-option" data-value="en">English</div>
-                        <div class="tumbler-option" data-value="de">Deutsch</div>
-                        <div class="tumbler-option" data-value="ru">Русский</div>
-                        <div class="tumbler-option" data-value="uk">Українська</div>
+                    <div class="custom-dropdown" id="lang-dropdown">
+                        <div class="dropdown-header">
+                            <span class="dropdown-selected">Русский</span>
+                            <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                        </div>
+                        <div class="dropdown-list">
+                            <div class="dropdown-option" data-value="en">English</div>
+                            <div class="dropdown-option" data-value="de">Deutsch</div>
+                            <div class="dropdown-option" data-value="ru">Русский</div>
+                            <div class="dropdown-option" data-value="uk">Українська</div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-actions" style="margin-top: 24px;">
-                    <button id="settings-close" data-i18n="close">Закрыть</button>
+
+                <!-- Грамматика -->
+                <div class="settings-group" style="cursor: pointer;" id="setting-spellcheck">
+                    <label style="cursor: pointer; flex-grow: 1;"><span data-i18n="spellcheck">Подчёркивать неправильную грамматику</span></label>
+                    <div class="setting-toggle"></div>
+                </div>
+
+                <!-- <span data-i18n="commands">Отключить команды</span> -->
+                <div class="settings-group" style="cursor: pointer;" id="setting-commands">
+                    <label style="cursor: pointer; flex-grow: 1;"><span data-i18n="commands">Отключить команды</span></label>
+                    <div class="setting-toggle"></div>
+                </div>
+
+                <!-- Корзина -->
+                <button class="settings-trash-btn" id="trash-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                    Корзина
+                </button>
+
+                <!-- Лимит хранилища Telegram -->
+                <div class="storage-limit-container">
+                    <div class="storage-limit-header">
+                        <span>Хранилище Telegram</span>
+                        <span id="storage-percentage">12%</span>
+                    </div>
+                    <div class="storage-progress-bg">
+                        <div class="storage-progress-fill" id="storage-fill" style="width: 12%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Окно Корзины -->
+        <div id="trash-modal" class="modal-overlay">
+            <div class="modal-content" style="height: 450px; max-height: 80vh; padding: 0; border-radius: 16px; width: 90%; max-width: 340px; display: flex; flex-direction: column; overflow: hidden;">
+                <div style="padding: 20px 24px; border-bottom: 1px solid rgba(128, 128, 128, 0.15); flex-shrink: 0;">
+                    <h3 style="margin: 0; text-align: center;" data-i18n="trashBtn">Корзина</h3>
+                </div>
+                <div id="trash-list" style="overflow-y: auto; flex-grow: 1; min-height: 0; display: flex; flex-direction: column;">
+                    <!-- Сюда добавляются элементы корзины через JS -->
+                </div>
+            </div>
+        </div>
+
+        <div id="create-modal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 260px; padding: 0; background: transparent; box-shadow: none;">
+                <div class="action-sheet-inner" style="display: flex; flex-direction: column; gap: 1px; background: hsl(0deg 0% 100% / 70%); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <button id="create-modal-note" data-i18n="createNote" style="width: 100%; padding: 18px; border-radius: 0; border: none; background: var(--bg-primary); color: var(--text-primary); font-size: 16px; font-weight: 500; cursor: pointer;">Создать заметку</button>
+                    <button id="create-modal-folder" data-i18n="createFolder" style="width: 100%; padding: 18px; border-radius: 0; border: none; background: var(--bg-primary); color: var(--text-primary); font-size: 16px; font-weight: 500; cursor: pointer;">Создать папку</button>
+                </div>
+            </div>
+        </div>
+        <div id="selection-action-bar" class="selection-action-bar hidden">
+            <button id="batch-cancel-btn" title="Отмена" class="batch-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+            <div class="batch-actions">
+                <button id="batch-star-btn" title="Отметить" class="batch-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path fill="currentColor" d="m12 17.275l-4.15 2.5q-.275.175-.575.15t-.525-.2t-.35-.437t-.05-.588l1.1-4.725L3.775 10.8q-.25-.225-.312-.513t.037-.562t.3-.45t.55-.225l4.85-.425l1.875-4.45q.125-.3.388-.45t.537-.15t.537.15t.388.45l1.875 4.45l4.85.425q.35.05.55.225t.3.45t.038.563t-.313.512l-3.675 3.175l1.1 4.725q.075.325-.05.588t-.35.437t-.525.2t-.575-.15z" />
+                    </svg>
+                </button>
+                <button id="batch-restore-btn" title="Восстановить" class="batch-btn restore" style="display: none; color: #34c759;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M14 12c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm-2-9a9 9 0 0 0-9 9H0l4 4 4-4H5c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.51 0-2.91-.49-4.06-1.3l-1.42 1.44C8.04 20.3 9.94 21 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/>
+                    </svg>
+                </button>
+                <button id="batch-delete-btn" title="Удалить" class="batch-btn delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path fill="currentColor" d="M20 6a1 1 0 0 1 .117 1.993L20 8h-.081L19 19a3 3 0 0 1-2.824 2.995L16 22H8c-1.598 0-2.904-1.249-2.992-2.75l-.005-.167L4.08 8H4a1 1 0 0 1-.117-1.993L4 6zm-10 4a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1m4 0a1 1 0 0 0-1 1v6a1 1 0 0 0 2 0v-6a1 1 0 0 0-1-1m0-8a2 2 0 0 1 2 2a1 1 0 0 1-1.993.117L14 4h-4l-.007.117A1 1 0 0 1 8 4a2 2 0 0 1 1.85-1.995L10 2z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="icon-picker-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3 data-i18n="selectIconTitle" style="text-align: center; margin-bottom: 20px;">Выберите иконку</h3>
+                <div id="icon-grid" class="icon-grid">
+                    <!-- Иконки генерируются через JS -->
                 </div>
             </div>
         </div>
     </div>
-    
+    <script src="https://unpkg.com/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <script src="script.js?v=2"></script>
 </body>
 </html>
